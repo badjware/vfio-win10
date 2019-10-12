@@ -1,0 +1,18 @@
+#!/bin/bash
+if [ "$1" == "win10" ]; then
+    if [ "$2" == "prepare" ]; then
+        systemctl start vm-usb-helper
+        # defrag ram
+        echo 1 > /proc/sys/vm/compact_memory
+        for _ in $(seq 5); do
+            sleep 3
+            # assign hugepages
+            sysctl -w vm.nr_hugepages=8192 && break
+        done
+        sleep 10
+    fi
+    if [ "$2" == "release" ]; then
+        systemctl stop vm-usb-helper
+        sysctl -w vm.nr_hugepages=0
+    fi
+fi

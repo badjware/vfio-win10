@@ -1,0 +1,9 @@
+- hosts: all, localhost
+  become: yes
+  vars:
+    pcie_device_ids:
+      - '8086:15b8' # Intel Corporation Ethernet Connection (2) I219-V
+      - '1002:731f' # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 [Radeon RX 5700 / 5700 XT]
+      - '1002:ab38' # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 HDMI Audio
+  roles:
+    - win10

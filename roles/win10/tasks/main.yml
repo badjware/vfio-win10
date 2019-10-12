@@ -1,0 +1,81 @@
+- name: install required packages
+  pacman:
+    name:
+      - qemu
+      - libvirt
+      - ovmf
+      - virt-manager
+  notify:
+    - restart libvirtd.socket
+    - restart virtlogd.socket
+
+- name: create hooks directory
+  file:
+    path: /etc/libvirt/hooks
+    state: directory
+
+- name: configure kernel modules
+  lineinfile:
+    path: /etc/mkinitcpio.conf
+    regexp: '^MODULE='
+    line: 'MODULES=(vfio_pci vfio vfio_iommu_type1 vfio_virqfd i915)'
+  notify: regenerate linux initramfs
+
+- name: configure vfio-pci device ids
+  template:
+    src: vfio.conf.j2
+    dest: /etc/modprobe.d/vfio.conf
+  notify: regenerate linux initramfs
+
+- name: install boot entry
+  copy:
+    src: archlinux_iommu.conf
+    dest: /boot/loader/entries/archlinux_iommu.conf
+
+- name: configure qemu group
+  lineinfile:
+    path: /etc/libvirt/qemu.conf
+    regexp: '^#?group ='
+    line: 'group = "kvm"'
+
+- name: setup headless audio
+  lineinfile:
+    path: /etc/libvirt/qemu.conf
+    regexp: '^#?nographics_allow_host_audio ='
+    line: 'nographics_allow_host_audio = 1'
+
+- name: setup ovmf firmware image
+  blockinfile:
+    path: /etc/libvirt/qemu.conf
+    insertbefore: '^#nvram = \['
+    block: |
+      nvram = [
+          "/usr/share/ovmf/x64/OVMF_CODE.fd:/usr/share/ovmf/x64/OVMF_VARS.fd"
+      ]
+  notify: restart libvirtd.socket
+
+- name: setup cgroup device acl
+  blockinfile:
+    path: /etc/libvirt/qemu.conf
+    insertbefore: '^#cgroup_device_acl = \['
+    block: |
+      cgroup_device_acl = [
+          "/dev/kvm",
+          "/dev/input/by-id/KEYBOARD_NAME",
+          "/dev/input/by-id/MOUSE_NAME",
+          "/dev/null", "/dev/full", "/dev/zero",
+          "/dev/random", "/dev/urandom",
+          "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
+          "/dev/rtc","/dev/hpet", "/dev/sev"
+      ]
+
+- name: install domain configuration
+  copy:
+    src: win10.xml
+    dest: /etc/libvirt/qemu/win10.xml
+
+- name: install qemu hook
+  copy:
+    src: qemu_hook
+    dest: /etc/libvirt/hooks/qemu
+    mode: '755'
