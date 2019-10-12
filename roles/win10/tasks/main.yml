@@ -17,7 +17,7 @@
 - name: configure kernel modules
   lineinfile:
     path: /etc/mkinitcpio.conf
-    regexp: '^MODULE='
+    regexp: '^MODULES='
     line: 'MODULES=(vfio_pci vfio vfio_iommu_type1 vfio_virqfd i915)'
   notify: regenerate linux initramfs
 
@@ -32,10 +32,16 @@
     src: archlinux_iommu.conf
     dest: /boot/loader/entries/archlinux_iommu.conf
 
+- name: configure qemu user
+  lineinfile:
+    path: /etc/libvirt/qemu.conf
+    regexp: '^#?user'
+    line: 'user = "1000"'
+
 - name: configure qemu group
   lineinfile:
     path: /etc/libvirt/qemu.conf
-    regexp: '^#?group ='
+    regexp: '^#?group'
     line: 'group = "kvm"'
 
 - name: setup headless audio
@@ -47,7 +53,8 @@
 - name: setup ovmf firmware image
   blockinfile:
     path: /etc/libvirt/qemu.conf
-    insertbefore: '^#nvram = \['
+    insertbefore: '^#nvram'
+    marker: '# {mark} NVRAM CONFIGURATION'
     block: |
       nvram = [
           "/usr/share/ovmf/x64/OVMF_CODE.fd:/usr/share/ovmf/x64/OVMF_VARS.fd"
@@ -57,16 +64,16 @@
 - name: setup cgroup device acl
   blockinfile:
     path: /etc/libvirt/qemu.conf
-    insertbefore: '^#cgroup_device_acl = \['
+    insertbefore: '^#cgroup_device_acl'
+    marker: '# {mark} DEVICE ACL CONFIGURATION'
     block: |
       cgroup_device_acl = [
           "/dev/kvm",
-          "/dev/input/by-id/KEYBOARD_NAME",
-          "/dev/input/by-id/MOUSE_NAME",
           "/dev/null", "/dev/full", "/dev/zero",
           "/dev/random", "/dev/urandom",
           "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
-          "/dev/rtc","/dev/hpet", "/dev/sev"
+          "/dev/rtc","/dev/hpet", "/dev/sev",
+          "/dev/input/by-path/platform-i8042-serio-0-event-kbd"
       ]
 
 - name: install domain configuration
