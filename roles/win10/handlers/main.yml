@@ -1,10 +1,10 @@
 - name: regenerate linux initramfs
   command: /usr/bin/mkinitcpio -p linux
 
-- name: restart libvirtd.socket
+- name: restart libvirtd.service
   systemd:
-    name: libvirtd.socket
-    enabled: yes
+    name: libvirtd.service
+    enabled: no
     state: restarted
 
 - name: restart virtlogd.socket

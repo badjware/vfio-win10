@@ -59,7 +59,7 @@
       nvram = [
           "/usr/share/ovmf/x64/OVMF_CODE.fd:/usr/share/ovmf/x64/OVMF_VARS.fd"
       ]
-  notify: restart libvirtd.socket
+  notify: restart libvirtd.service
 
 - name: setup cgroup device acl
   blockinfile:
@@ -80,9 +80,17 @@
   copy:
     src: win10.xml
     dest: /etc/libvirt/qemu/win10.xml
+    validate: /usr/bin/virt-xml-validate %s
+  notify: restart libvirtd.service
 
 - name: install qemu hook
   copy:
     src: qemu_hook
     dest: /etc/libvirt/hooks/qemu
     mode: '755'
+
+- name: enable libvirtd.socket
+  systemd:
+    name: libvirtd.socket
+    enabled: yes
+
