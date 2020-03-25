@@ -85,9 +85,15 @@
 
 - name: install qemu hook
   copy:
-    src: qemu_hook
+    src: hooks/qemu
     dest: /etc/libvirt/hooks/qemu
     mode: '755'
+
+- name: configure systemd CPUAffinity
+  lineinfile:
+    path: /etc/systemd/system.conf
+    regexp: '^#?CPUAffinity'
+    line: 'CPUAffinity=0 4'
 
 - name: enable libvirtd.socket
   systemd:

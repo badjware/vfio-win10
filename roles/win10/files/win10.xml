@@ -10,6 +10,7 @@
   <currentMemory unit='KiB'>16777216</currentMemory>
   <memoryBacking>
     <hugepages/>
+    <locked/>
   </memoryBacking>
   <vcpu placement='static'>6</vcpu>
   <iothreads>1</iothreads>
@@ -22,6 +23,9 @@
     <vcpupin vcpu='5' cpuset='7'/>
     <emulatorpin cpuset='0,4'/>
     <iothreadpin iothread='1' cpuset='0,4'/>
+    <vcpusched vcpus='0-5' scheduler='fifo' priority='99'/>
+    <emulatorsched scheduler='fifo' priority='99'/>
+    <iothreadsched iothreads='1' scheduler='fifo' priority='99'/>
   </cputune>
   <os>
     <type arch='x86_64' machine='pc-q35-4.1'>hvm</type>
@@ -33,14 +37,18 @@
     <apic/>
     <hyperv>
       <!-- hyper-v enlightments, the more the better -->
+      <!-- https://archive.fosdem.org/2019/schedule/event/vai_enlightening_kvm/ -->
       <relaxed state='on'/>
       <vapic state='on'/>
       <spinlocks state='on' retries='8191'/>
       <vpindex state='on'/>
       <synic state='on'/>
       <stimer state='on'/>
+      <tlbflush state='on'/>
+      <ipi state='on'/>
       <reset state='on'/>
       <frequencies state='on'/>
+      <reenlightenment state='on'/>
       <!-- nvidia code 43 fix -->
       <vendor_id state='off' value='fNvidia'/>
     </hyperv>
@@ -54,6 +62,7 @@
   <cpu mode='host-passthrough' check='none'>
     <topology sockets='1' cores='3' threads='2'/>
     <cache mode='passthrough'/>
+    <feature policy='require' name='invtsc'/>
   </cpu>
   <clock offset='localtime'>
     <timer name='rtc' present='no' tickpolicy='catchup'/>
@@ -65,7 +74,7 @@
   </clock>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
-  <on_crash>destroy</on_crash>
+  <on_crash>restart</on_crash>
   <pm>
     <suspend-to-mem enabled='no'/>
     <suspend-to-disk enabled='no'/>
@@ -81,7 +90,7 @@
     </disk>
     <disk type='block' device='disk'>
       <driver name='qemu' type='raw' cache='none' io='native' discard='unmap' detect_zeroes='unmap'/>
-      <source dev='/dev/disk/by-id/nvme-CT1000P1SSD8_1910E1F03D8E'/>
+      <source dev='/dev/nvme0n1'/>
       <target dev='sdc' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
     </disk>
@@ -162,15 +171,17 @@
     </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <sound model='ich6'>
+    <sound model='ich9'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
     </sound>
+    <!--
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x00' slot='0x1f' function='0x6'/>
       </source>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x0'/>
     </hostdev>
+    -->
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
