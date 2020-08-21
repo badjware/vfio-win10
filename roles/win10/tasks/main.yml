@@ -89,11 +89,18 @@
     dest: /etc/libvirt/hooks/qemu
     mode: '755'
 
-- name: configure systemd CPUAffinity
+# - name: configure systemd CPUAffinity
+#   lineinfile:
+#     path: /etc/systemd/system.conf
+#     regexp: '^#?CPUAffinity'
+#     line: 'CPUAffinity=0 4'
+
+- name: configure pulseaudio tcp socket
   lineinfile:
-    path: /etc/systemd/system.conf
-    regexp: '^#?CPUAffinity'
-    line: 'CPUAffinity=0 4'
+    path: /etc/pulse/default.pa
+    regexp: '^#?load-module module-native-protocol-tcp'
+    line: 'load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1'
+
 
 - name: enable libvirtd.socket
   systemd:

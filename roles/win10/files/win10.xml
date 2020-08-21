@@ -73,8 +73,9 @@
     <timer name='tsc' present='yes' mode='native'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
-  <on_reboot>restart</on_reboot>
-  <on_crash>restart</on_crash>
+  <!-- Because of the reset bug, we cannot actually restart without restarting the host -->
+  <on_reboot>destroy</on_reboot>
+  <on_crash>destroy</on_crash>
   <pm>
     <suspend-to-mem enabled='no'/>
     <suspend-to-disk enabled='no'/>
@@ -171,17 +172,18 @@
     </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
+    <graphics type='spice' autoport='yes' defaultMode="insecure" listen="127.0.0.1" port="5900">
+      <listen type='address' address="127.0.0.1"/>
+    </graphics>
     <sound model='ich9'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
     </sound>
-    <!--
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x00' slot='0x1f' function='0x6'/>
       </source>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x0'/>
     </hostdev>
-    -->
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
@@ -215,6 +217,7 @@
     <qemu:arg value='input-linux,id=kbd1,evdev=/dev/input/by-path/platform-i8042-serio-0-event-kbd,grab_all=off,repeat=on'/>
     <!-- audio passthrough -->
     <qemu:arg value='-audiodev'/>
-    <qemu:arg value='pa,id=pa1,server=/run/user/1000/pulse/native'/>
+    <qemu:arg value="driver=pa,id=hda,server=/run/user/1000/pulse/native,out.buffer-length=2000,timer-period=1000"/>
+    <!-- <qemu:arg value="driver=pa,id=hda,server=127.0.0.1,out.buffer-length=2000,timer-period=1000"/> -->
   </qemu:commandline>
 </domain>
