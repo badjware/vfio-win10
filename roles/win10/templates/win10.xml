@@ -163,17 +163,17 @@
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </controller>
-    <interface type='network'>
+    <interface type='bridge'>
       <mac address='52:54:00:f5:2c:df'/>
-      <source network='default'/>
-      <model type='e1000e'/>
+      <source bridge='virbr0'/>
+      <model type='virtio'/>
       <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
     </interface>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <graphics type='spice'>
-        <listen type='socket' socket='/tmp/spice-win10.sock'/>
+        <listen type='socket' socket='/tmp/win10-spice.sock'/>
         <image compression='off' />
         <mouse mode='server'/>
         <filetransfer enable='no'/>
@@ -217,7 +217,7 @@
   <qemu:commandline>
     <!-- keyboard evdev passthrough -->
     <qemu:arg value='-object'/>
-    <qemu:arg value='input-linux,id=kbd1,evdev=/dev/input/by-path/platform-i8042-serio-0-event-kbd,grab_all=off,repeat=on'/>
+    <qemu:arg value='input-linux,id=kbd1,evdev={{ kbd_device_path }},grab_all=off,repeat=on'/>
     <!-- audio passthrough -->
     <qemu:arg value='-audiodev'/>
     <qemu:arg value="driver=pa,id=hda,server=/run/user/1000/pulse/native,out.buffer-length=2000,timer-period=1000"/>

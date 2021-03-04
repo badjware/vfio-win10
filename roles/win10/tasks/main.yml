@@ -9,10 +9,34 @@
     - restart libvirtd.socket
     - restart virtlogd.socket
 
+# TODO
+# - name: install required packages from aur
+#   aur:
+#     name:
+#       - vfio-isolate
+
 - name: create hooks directory
   file:
     path: /etc/libvirt/hooks
     state: directory
+
+- name: install qemu hook
+  copy:
+    src: hooks/qemu
+    dest: /etc/libvirt/hooks/qemu
+    mode: '755'
+
+- name: install vfio-usb
+  copy:
+    src: vfio-usb
+    dest: /usr/bin/vfio-usb
+    mode: '755'
+
+- name: install win10-usb service
+  template:
+    src: win10-usb.service.j2
+    dest: /etc/systemd/system/win10-usb.service
+  notify: reload systemd services
 
 - name: configure kernel modules
   lineinfile:
@@ -73,34 +97,21 @@
           "/dev/random", "/dev/urandom",
           "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
           "/dev/rtc","/dev/hpet", "/dev/sev",
-          "/dev/input/by-path/platform-i8042-serio-0-event-kbd"
+          "{{ kbd_device_path }}"
       ]
 
 - name: install domain configuration
-  copy:
+  template:
     src: win10.xml
     dest: /etc/libvirt/qemu/win10.xml
     validate: /usr/bin/virt-xml-validate %s
   notify: restart libvirtd.service
-
-- name: install qemu hook
-  copy:
-    src: hooks/qemu
-    dest: /etc/libvirt/hooks/qemu
-    mode: '755'
 
 # - name: configure systemd CPUAffinity
 #   lineinfile:
 #     path: /etc/systemd/system.conf
 #     regexp: '^#?CPUAffinity'
 #     line: 'CPUAffinity=0 4'
-
-- name: configure pulseaudio tcp socket
-  lineinfile:
-    path: /etc/pulse/default.pa
-    regexp: '^#?load-module module-native-protocol-tcp'
-    line: 'load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1 auth-anonymous=1'
-
 
 - name: enable libvirtd.socket
   systemd:

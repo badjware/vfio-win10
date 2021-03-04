@@ -5,5 +5,10 @@
       - '8086:15b8' # Intel Corporation Ethernet Connection (2) I219-V
       - '1002:731f' # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 [Radeon RX 5700 / 5700 XT]
       - '1002:ab38' # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 HDMI Audio
+    usb_device_ids:
+      - '054c:05c4' # Sony Corp. DualShock 4 [CUH-ZCT1x]
+      - '046d:c539' # Logitech, Inc. USB Receiver
+      - '046d:c08d' # Logitech, Inc. G502 LIGHTSPEED Wireless Gaming Mouse
+    kbd_device_path: '/dev/input/by-id/usb-0d3d_USBPS2-event-kbd'
   roles:
     - win10

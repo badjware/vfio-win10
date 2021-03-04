@@ -1,56 +1,28 @@
 #!/bin/bash
 
 prepare() {
-    systemctl start vm-usb-helper
+    systemctl start win10-usb
+    vfio-isolate -u /tmp/win10.undo \
+        drop-caches \
+        compact-memory \
+        irq-affinity mask C1-3,5-7 \
+        cpuset-create --cpus C0,4 /host.slice \
+        cpuset-create --cpus C1-3,5-7 -nlb /win10.slice \
+        move-tasks / /host.slice \
+        cpu-governor performance C0-7
 
-    echo "Defrag RAM"
-    echo 1 > /proc/sys/vm/compact_memory
     for _ in $(seq 5); do
         sleep 3
         # assign hugepages
         sysctl -w vm.nr_hugepages=8192 && break
     done
     sleep 10
-
-    echo "Setup cpuset cgroup for host"
-    sudo cset set -c 0,4 -s system
-    sudo cset proc -m -f root -t system
-    sudo cset proc -k -f root -t system --force
-
-    echo "Setup cpumask"
-    for i in /sys/devices/virtual/workqueue/*/cpumask; do
-        sudo sh -c "echo 001 > $i"
-    done;
-
-    echo "Setup interrupt affinity"
-    for i in $(sed -n -e 's/ \([0-9]\+\):.*vfio.*/\1/p' /proc/interrupts); do
-        sudo sh -c "echo 0,4 > /proc/irq/$i/smp_affinity_list"
-    done
-
-    echo "Set the CPU frequency governor to performance"
-    for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
-        echo performance >$f
-    done
 }
 
 release() {
     echo "Restore system"
-    # irq
-    for i in $(sed -n -e 's/ \([0-9]\+\):.*vfio.*/\1/p' /proc/interrupts); do
-        sudo sh -c "echo ff > /proc/irq/$i/smp_affinity"
-    done
-    # cpumask
-    for i in /sys/devices/virtual/workqueue/*/cpumask; do
-        sudo sh -c "echo ff > $i"
-    done;
-    # cpuset
-    sudo cset set -d system &>/dev/null
-
-    for f in /sys/devices/system/cpu/cpu*/cpufreq/scaling_governor; do
-        echo powersave >$f
-    done
-
-    systemctl stop vm-usb-helper
+    vfio-isolate restore /tmp/win10.undo
+    systemctl stop win10-usb
     sysctl -w vm.nr_hugepages=0
 }
 

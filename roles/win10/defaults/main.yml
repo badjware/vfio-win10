@@ -1,1 +1,3 @@
 pcie_device_ids: []
+usb_device_ids: []
+kbd_device_path: ''

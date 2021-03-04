@@ -1,6 +1,10 @@
 - name: regenerate linux initramfs
   command: /usr/bin/mkinitcpio -p linux
 
+- name: reload systemd services
+  systemd:
+    daemon_reload: yes
+
 - name: restart libvirtd.service
   systemd:
     name: libvirtd.service
