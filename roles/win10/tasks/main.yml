@@ -5,15 +5,17 @@
       - libvirt
       - ovmf
       - virt-manager
+      - python-evdev
+      - python-pyudev
   notify:
-    - restart libvirtd.socket
+    - restart libvirtd.service
     - restart virtlogd.socket
 
-# TODO
-# - name: install required packages from aur
-#   aur:
-#     name:
-#       - vfio-isolate
+- name: install required aur packages
+  aur:
+    name:
+      - vfio-isolate
+      - persistent-evdev-git
 
 - name: create hooks directory
   file:
@@ -92,12 +94,17 @@
     marker: '# {mark} DEVICE ACL CONFIGURATION'
     block: |
       cgroup_device_acl = [
+          {% for item in keyboards %}
+          "/dev/input/by-id/uinput-persist-keyboard{{ loop.index0 }}",
+          {% endfor %}
+          {% for item in mice %}
+          "/dev/input/by-id/uinput-persist-mouse{{ loop.index0 }}",
+          {% endfor %}
           "/dev/kvm",
           "/dev/null", "/dev/full", "/dev/zero",
           "/dev/random", "/dev/urandom",
           "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
-          "/dev/rtc","/dev/hpet", "/dev/sev",
-          "{{ kbd_device_path }}"
+          "/dev/rtc","/dev/hpet", "/dev/sev"
       ]
 
 - name: install domain configuration
@@ -113,8 +120,14 @@
 #     regexp: '^#?CPUAffinity'
 #     line: 'CPUAffinity=0 4'
 
+- name: configure persistent-evedev
+  template:
+    src: persistent-evdev/config.json.j2
+    dest: /opt/persistent-evdev/etc/config.json
+  notify: restart persistent-evdev
+
 - name: enable libvirtd.socket
   systemd:
     name: libvirtd.socket
     enabled: yes
-
+    state: started

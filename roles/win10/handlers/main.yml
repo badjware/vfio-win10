@@ -16,3 +16,9 @@
     name: virtlogd.socket
     enabled: yes
     state: restarted
+
+- name: restart persistent-evdev
+  systemd:
+    name: persistent-evdev.service
+    enabled: yes
+    state: restarted

@@ -1,0 +1,12 @@
+{
+    "cache": "/opt/persistent-evdev/cache",
+    "devices": {
+        {% for item in keyboards %}
+        "persist-keyboard{{loop.index0}}": "{{ item }}",
+        {% endfor %}
+        {% for item in mice %}
+        "persist-mouse{{loop.index0}}": "{{ item }}",
+        {% endfor %}
+        "dummy" : "/dev/null"
+    }
+}

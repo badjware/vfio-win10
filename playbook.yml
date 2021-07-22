@@ -9,6 +9,8 @@
       - '054c:05c4' # Sony Corp. DualShock 4 [CUH-ZCT1x]
       - '046d:c539' # Logitech, Inc. USB Receiver
       - '046d:c08d' # Logitech, Inc. G502 LIGHTSPEED Wireless Gaming Mouse
-    kbd_device_path: '/dev/input/by-id/usb-0d3d_USBPS2-event-kbd'
+    keyboards:
+      - '/dev/input/by-id/usb-0d3d_USBPS2-event-kbd'
+    mice: []
   roles:
     - win10

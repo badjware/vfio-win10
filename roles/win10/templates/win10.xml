@@ -83,7 +83,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
-      <driver name='qemu' type='raw' io='threads'/>
+      <driver name='qemu' type='raw'/>
       <source file='/home/marchambault/Documents/virtualmachines/img/win10.img'/>
       <target dev='sda' bus='scsi'/>
       <boot order='1'/>
@@ -180,7 +180,9 @@
     </graphics>
     <sound model='ich9'>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
+      <audio id='1'/>
     </sound>
+    <audio id='1' type='pulseaudio' serverName='/run/user/1000/pulse/native'/>
     <hostdev mode='subsystem' type='pci' managed='yes'>
       <source>
         <address domain='0x0000' bus='0x00' slot='0x1f' function='0x6'/>
@@ -205,9 +207,10 @@
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='3'/>
     </redirdev>
-    <memballoon model='virtio'>
+    <memballoon model='none'/>
+    <!-- <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
-    </memballoon>
+    </memballoon> -->
     <shmem name='looking-glass'>
       <model type='ivshmem-plain'/>
       <size unit='M'>32</size>
@@ -216,11 +219,14 @@
   </devices>
   <qemu:commandline>
     <!-- keyboard evdev passthrough -->
+    {% for item in keyboards %}
     <qemu:arg value='-object'/>
-    <qemu:arg value='input-linux,id=kbd1,evdev={{ kbd_device_path }},grab_all=off,repeat=on'/>
-    <!-- audio passthrough -->
-    <qemu:arg value='-audiodev'/>
-    <qemu:arg value="driver=pa,id=hda,server=/run/user/1000/pulse/native,out.buffer-length=2000,timer-period=1000"/>
-    <!-- <qemu:arg value="driver=pa,id=hda,server=127.0.0.1,out.buffer-length=2000,timer-period=1000"/> -->
+    <qemu:arg value='input-linux,id=kbd1,evdev=/dev/input/by-id/uinput-persist-keyboard{{ loop.index0 }},grab_all=off,repeat=on'/>
+    {% endfor %}
+    <!-- mouse evdev passthrough -->
+    {% for item in mice %}
+    <qemu:arg value='-object'/>
+    <qemu:arg value='input-linux,id=input5,evdev=/dev/input/by-id/uinput-persist-mouse{{ loop.index0 }}'/>
+    {% endfor %}
   </qemu:commandline>
 </domain>

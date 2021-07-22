@@ -2,7 +2,7 @@
 Description=Attach usb devices to vm
 
 [Service]
-ExecStart=/usr/bin/vfio-usb win10 --evdev-kbd "{{ kbd_device_path }}" {{ ' '.join(usb_device_ids) }}
+ExecStart=/usr/bin/vfio-usb win10 --evdev-kbd "/dev/input/by-id/uinput-persist-keyboard0" {{ ' '.join(usb_device_ids) }}
 Restart=always
 
 

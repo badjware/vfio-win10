@@ -2,14 +2,27 @@
 
 prepare() {
     systemctl start win10-usb
+
+    # setup cgroupv2
+    systemctl set-property --runtime -- user.slice AllowedCPUs=0,4
+    systemctl set-property --runtime -- system.slice AllowedCPUs=0,4
+    systemctl set-property --runtime -- init.scope AllowedCPUs=0,4
+
+
     vfio-isolate -u /tmp/win10.undo \
         drop-caches \
         compact-memory \
         irq-affinity mask C1-3,5-7 \
-        cpuset-create --cpus C0,4 /host.slice \
-        cpuset-create --cpus C1-3,5-7 -nlb /win10.slice \
-        move-tasks / /host.slice \
         cpu-governor performance C0-7
+        
+    # vfio-isolate -u /tmp/win10.undo \
+    #     drop-caches \
+    #     compact-memory \
+    #     irq-affinity mask C1-3,5-7 \
+    #     cpuset-create --cpus C0,4 /host.slice \
+    #     cpuset-create --cpus C1-3,5-7 -nlb /win10.slice \
+    #     move-tasks / /host.slice \
+    #     cpu-governor performance C0-7
 
     for _ in $(seq 5); do
         sleep 3
@@ -21,6 +34,12 @@ prepare() {
 
 release() {
     echo "Restore system"
+
+    # restore cgroupv2
+    systemctl set-property --runtime -- user.slice AllowedCPUs=0,1,2,3,4,5,6,7
+    systemctl set-property --runtime -- system.slice AllowedCPUs=0,1,2,3,4,5,6,7
+    systemctl set-property --runtime -- init.scope AllowedCPUs=0,1,2,3,4,5,6,7
+
     vfio-isolate restore /tmp/win10.undo
     systemctl stop win10-usb
     sysctl -w vm.nr_hugepages=0
