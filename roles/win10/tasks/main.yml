@@ -47,9 +47,15 @@
     line: 'MODULES=(vfio_pci vfio vfio_iommu_type1 vfio_virqfd i915)'
   notify: regenerate linux initramfs
 
-- name: configure vfio-pci device ids
+- name: configure kvm kernel module
+  copy:
+    src: modprobe/kvm.conf
+    dest: /etc/modprobe.d/kvm.conf
+  notify: regenerate linux initramfs
+
+- name: configure vfio-pci kernel module
   template:
-    src: vfio.conf.j2
+    src: modprobe/vfio.conf.j2
     dest: /etc/modprobe.d/vfio.conf
   notify: regenerate linux initramfs
 
