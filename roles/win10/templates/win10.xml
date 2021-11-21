@@ -42,18 +42,20 @@
       <vapic state='on'/>
       <spinlocks state='on' retries='8191'/>
       <vpindex state='on'/>
+      <runtime state='on'/>
       <synic state='on'/>
-      <stimer state='on'/>
-      <tlbflush state='on'/>
-      <ipi state='on'/>
+      <stimer state="on">
+        <direct state="on"/>
+      </stimer>
       <reset state='on'/>
+      <vendor_id state='on' value='other'/>
       <frequencies state='on'/>
       <reenlightenment state='on'/>
-      <!-- nvidia code 43 fix -->
-      <vendor_id state='on' value='fNvidia'/>
+      <tlbflush state='on'/>
+      <ipi state='on'/>
+      <evmcs state='off'/>
     </hyperv>
     <kvm>
-        <!-- nvidia code 43 fix -->
         <hidden state='on'/>
     </kvm>
     <vmport state='off'/>
@@ -67,12 +69,11 @@
     <!-- <feature policy="disable" name="hypervisor"/> -->
   </cpu>
   <clock offset='localtime'>
-    <timer name='rtc' present='no' tickpolicy='catchup'/>
-    <timer name='pit' present='no' tickpolicy='delay'/>
-    <timer name='hpet' present='no'/>
-    <timer name='kvmclock' present='no'/>
-    <timer name='hypervclock' present='yes'/>
     <timer name='tsc' present='yes' mode='native'/>
+    <timer name='hypervclock' present='yes'/>
+    <timer name='rtc' tickpolicy='catchup'/>
+    <timer name='pit' tickpolicy='delay'/>
+    <timer name='hpet' present='no'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
   <!-- Because of the reset bug, we cannot actually restart without restarting the host -->
@@ -212,9 +213,6 @@
       <address type='usb' bus='0' port='3'/>
     </redirdev>
     <memballoon model='none'/>
-    <!-- <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x07' slot='0x00' function='0x0'/>
-    </memballoon> -->
     <shmem name='looking-glass'>
       <model type='ivshmem-plain'/>
       <size unit='M'>32</size>
