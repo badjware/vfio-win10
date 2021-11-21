@@ -10,7 +10,8 @@
       - '046d:c539' # Logitech, Inc. USB Receiver
       - '046d:c08d' # Logitech, Inc. G502 LIGHTSPEED Wireless Gaming Mouse
     keyboards:
-      - '/dev/input/by-id/usb-0d3d_USBPS2-event-kbd'
+      # - '/dev/input/by-id/usb-0d3d_USBPS2-event-kbd'
+      - '/dev/input/by-path/platform-i8042-serio-0-event-kbd'
     mice: []
   roles:
     - win10

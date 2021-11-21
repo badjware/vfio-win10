@@ -64,7 +64,7 @@
     <cache mode='passthrough'/>
     <feature policy='require' name='invtsc'/>
     <!-- required for Genshin Impact, come with a performance hit -->
-    <feature policy="disable" name="hypervisor"/>
+    <!-- <feature policy="disable" name="hypervisor"/> -->
   </cpu>
   <clock offset='localtime'>
     <timer name='rtc' present='no' tickpolicy='catchup'/>
@@ -173,7 +173,9 @@
       <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
     </interface>
     <input type='mouse' bus='ps2'/>
+    <input type='mouse' bus='virtio'/>
     <input type='keyboard' bus='ps2'/>
+    <input type='keyboard' bus='virtio'/>
     <graphics type='spice'>
         <listen type='socket' socket='/tmp/win10-spice.sock'/>
         <image compression='off' />
@@ -218,17 +220,19 @@
       <size unit='M'>32</size>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x04' function='0x0'/>
     </shmem>
-  </devices>
-  <qemu:commandline>
-    <!-- keyboard evdev passthrough -->
-    {% for item in keyboards %}
-    <qemu:arg value='-object'/>
-    <qemu:arg value='input-linux,id=kbd1,evdev=/dev/input/by-id/uinput-persist-keyboard{{ loop.index0 }},grab_all=off,repeat=on'/>
-    {% endfor %}
     <!-- mouse evdev passthrough -->
     {% for item in mice %}
-    <qemu:arg value='-object'/>
-    <qemu:arg value='input-linux,id=input5,evdev=/dev/input/by-id/uinput-persist-mouse{{ loop.index0 }}'/>
+    <input type='evdev'>
+      <source dev='/dev/input/by-id/uinput-persist-mouse{{ loop.index0 }}'/>
+    </input>
     {% endfor %}
+    <!-- keyboard evdev passthrough -->
+    {% for item in keyboards %}
+    <input type='evdev'>
+      <source dev='/dev/input/by-id/uinput-persist-keyboard{{ loop.index0 }}' grab='all' repeat='on'/>
+    </input>
+    {% endfor %}
+  </devices>
+  <qemu:commandline>
   </qemu:commandline>
 </domain>
