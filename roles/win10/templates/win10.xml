@@ -48,7 +48,7 @@
         <direct state="on"/>
       </stimer>
       <reset state='on'/>
-      <vendor_id state='on' value='other'/>
+      <!-- <vendor_id state='on' value='other'/> -->
       <frequencies state='on'/>
       <reenlightenment state='on'/>
       <tlbflush state='on'/>
@@ -61,7 +61,7 @@
     <vmport state='off'/>
     <ioapic driver='kvm'/>
   </features>
-  <cpu mode='host-passthrough' check='none'>
+  <cpu mode='host-passthrough' check='partial'>
     <topology sockets='1' cores='3' threads='2'/>
     <cache mode='passthrough'/>
     <feature policy='require' name='invtsc'/>
@@ -76,8 +76,8 @@
     <timer name='hpet' present='no'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
-  <!-- Because of the reset bug, we cannot actually restart without restarting the host -->
-  <on_reboot>destroy</on_reboot>
+  <!-- Because of the AMD reset bug, we cannot actually restart normally -->
+  <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <pm>
     <suspend-to-mem enabled='no'/>
@@ -177,8 +177,8 @@
     <input type='mouse' bus='virtio'/>
     <input type='keyboard' bus='ps2'/>
     <input type='keyboard' bus='virtio'/>
-    <graphics type='spice'>
-        <listen type='socket' socket='/tmp/win10-spice.sock'/>
+    <graphics type='spice' listen='127.0.0.1' port='5900' defaultMode='insecure'>
+        <listen type='address' address='127.0.0.1'/>
         <image compression='off' />
         <mouse mode='server'/>
         <filetransfer enable='no'/>
