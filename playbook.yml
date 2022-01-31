@@ -1,10 +1,26 @@
 - hosts: all, localhost
   become: yes
   vars:
-    pcie_device_ids:
-      - '8086:15b8' # Intel Corporation Ethernet Connection (2) I219-V
+    vfio_pci_ids:
+      # - '8086:15b8' # Intel Corporation Ethernet Connection (2) I219-V
       - '1002:731f' # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 [Radeon RX 5700 / 5700 XT]
       - '1002:ab38' # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 HDMI Audio
+    pci_device_ids:
+      # Intel Corporation Ethernet Connection (2) I219-V
+      # - domain: '0000'
+      #   bus: '00'
+      #   slot: '1f'
+      #   function: '6'
+      # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 [Radeon RX 5700 / 5700 XT]
+      - domain: '0000'
+        bus: '03'
+        slot: '00'
+        function: '0'
+      # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 HDMI Audio
+      - domain: '0000'
+        bus: '03'
+        slot: '00'
+        function: '1'
     usb_device_ids:
       - '054c:05c4' # Sony Corp. DualShock 4 [CUH-ZCT1x]
       - '046d:c539' # Logitech, Inc. USB Receiver

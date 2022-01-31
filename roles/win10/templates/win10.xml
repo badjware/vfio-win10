@@ -77,7 +77,7 @@
   </clock>
   <on_poweroff>destroy</on_poweroff>
   <!-- Because of the AMD reset bug, we cannot actually restart normally -->
-  <on_reboot>restart</on_reboot>
+  <on_reboot>destroy</on_reboot>
   <on_crash>destroy</on_crash>
   <pm>
     <suspend-to-mem enabled='no'/>
@@ -166,58 +166,26 @@
     <controller type='usb' index='0' model='qemu-xhci' ports='15'>
       <address type='pci' domain='0x0000' bus='0x04' slot='0x00' function='0x0'/>
     </controller>
-    <interface type='bridge'>
+
+    <!-- networking -->
+    <!-- <interface type='bridge'>
       <mac address='52:54:00:f5:2c:df'/>
       <source bridge='virbr0'/>
       <model type='virtio'/>
       <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
+    </interface> -->
+      <interface type='bridge'>
+      <source bridge='br0'/>
+      <!-- <mac address='00:16:3e:1a:b3:4a'/> -->
+      <model type='virtio'/>
     </interface>
+
+    <!-- HID -->
     <input type='mouse' bus='ps2'/>
     <input type='mouse' bus='virtio'/>
     <input type='keyboard' bus='ps2'/>
     <input type='keyboard' bus='virtio'/>
-    <graphics type='spice' listen='127.0.0.1' port='5900' defaultMode='insecure'>
-        <listen type='address' address='127.0.0.1'/>
-        <image compression='off' />
-        <mouse mode='server'/>
-        <filetransfer enable='no'/>
-    </graphics>
-    <sound model='ich9'>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
-      <audio id='1'/>
-    </sound>
-    <audio id='1' type='pulseaudio' serverName='/run/user/1000/pulse/native'/>
-    <hostdev mode='subsystem' type='pci' managed='yes'>
-      <source>
-        <address domain='0x0000' bus='0x00' slot='0x1f' function='0x6'/>
-      </source>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x03' function='0x0'/>
-    </hostdev>
-    <hostdev mode='subsystem' type='pci' managed='yes'>
-      <source>
-        <address domain='0x0000' bus='0x03' slot='0x00' function='0x0'/>
-      </source>
-      <address type='pci' domain='0x0000' bus='0x09' slot='0x00' function='0x0'/>
-    </hostdev>
-    <hostdev mode='subsystem' type='pci' managed='yes'>
-      <source>
-        <address domain='0x0000' bus='0x03' slot='0x00' function='0x1'/>
-      </source>
-      <address type='pci' domain='0x0000' bus='0x0a' slot='0x00' function='0x0'/>
-    </hostdev>
-    <redirdev bus='usb' type='spicevmc'>
-      <address type='usb' bus='0' port='2'/>
-    </redirdev>
-    <redirdev bus='usb' type='spicevmc'>
-      <address type='usb' bus='0' port='3'/>
-    </redirdev>
-    <memballoon model='none'/>
-    <shmem name='looking-glass'>
-      <model type='ivshmem-plain'/>
-      <size unit='M'>32</size>
-      <address type='pci' domain='0x0000' bus='0x02' slot='0x04' function='0x0'/>
-    </shmem>
     <!-- mouse evdev passthrough -->
     {% for item in mice %}
     <input type='evdev'>
@@ -230,6 +198,45 @@
       <source dev='/dev/input/by-id/uinput-persist-keyboard{{ loop.index0 }}' grab='all' repeat='on'/>
     </input>
     {% endfor %}
+
+    <!-- audio -->
+    <sound model='ich9'>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
+      <audio id='1'/>
+    </sound>
+    <audio id='1' type='pulseaudio' serverName='/run/user/1000/pulse/native'/>
+  
+    <!-- pci passthrough -->
+    {% for pci_device_id in pci_device_ids %}
+    <hostdev mode='subsystem' type='pci' managed='yes'>
+      <source>
+        <address domain='0x{{ pci_device_id.domain }}' bus='0x{{ pci_device_id.bus }}' slot='0x{{ pci_device_id.slot }}' function='0x{{ pci_device_id.function }}'/>
+      </source>
+    </hostdev>
+    {% endfor %}
+  
+    <!-- spice -->
+    <graphics type='spice' listen='127.0.0.1' port='5900' defaultMode='insecure'>
+        <listen type='address' address='127.0.0.1'/>
+        <image compression='off' />
+        <mouse mode='server'/>
+        <filetransfer enable='no'/>
+    </graphics>
+    <redirdev bus='usb' type='spicevmc'>
+      <address type='usb' bus='0' port='2'/>
+    </redirdev>
+    <redirdev bus='usb' type='spicevmc'>
+      <address type='usb' bus='0' port='3'/>
+    </redirdev>
+    <memballoon model='none'/>
+
+    <!-- looking-glass -->
+    <shmem name='looking-glass'>
+      <model type='ivshmem-plain'/>
+      <size unit='M'>32</size>
+      <address type='pci' domain='0x0000' bus='0x02' slot='0x04' function='0x0'/>
+    </shmem>
+
   </devices>
   <qemu:commandline>
   </qemu:commandline>
