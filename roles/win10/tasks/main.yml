@@ -8,7 +8,6 @@
       - virt-manager
       - python-evdev
       - python-pyudev
-      - vendor-reset-dkms-git
   notify:
     - restart libvirtd.service
     - restart virtlogd.socket
@@ -18,6 +17,7 @@
     name:
       - vfio-isolate
       - persistent-evdev-git
+      - vendor-reset-dkms-git
 
 - name: create hooks directory
   file:
@@ -55,14 +55,8 @@
     dest: /etc/modprobe.d/kvm.conf
   notify: regenerate linux initramfs
 
-- name: configure vfio-pci kernel module
-  template:
-    src: modprobe/vfio.conf.j2
-    dest: /etc/modprobe.d/vfio.conf
-  notify: regenerate linux initramfs
-
 - name: install boot entry
-  copy:
+  template:
     src: archlinux_iommu.conf
     dest: /boot/loader/entries/archlinux_iommu.conf
 
