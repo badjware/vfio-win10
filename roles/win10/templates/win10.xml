@@ -76,7 +76,7 @@
     <timer name='hpet' present='no'/>
   </clock>
   <on_poweroff>destroy</on_poweroff>
-  <!-- Because of the AMD reset bug, we cannot actually restart normally -->
+  <!-- Because of the AMD reset bug, we cannot actually reboot normally -->
   <on_reboot>destroy</on_reboot>
   <on_crash>destroy</on_crash>
   <pm>
@@ -88,21 +88,22 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
       <source file='/data/marchambault/VirtualMachines/img/win10.img'/>
-      <target dev='sda' bus='scsi'/>
-      <boot order='1'/>
+      <target dev='sda' bus='scsi' rotation_rate="1"/>
+      <boot order='2'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
     <disk type='block' device='disk'>
-      <driver name='qemu' type='raw' cache='none' io='native' discard='unmap' detect_zeroes='unmap'/>
+      <driver name='qemu' type='raw' cache='none' io='native' discard='unmap'/>
       <source dev='/dev/disk/by-id/nvme-CT1000P1SSD8_1910E1F03D8E'/>
-      <target dev='sdc' bus='scsi'/>
+      <target dev='sdc' bus='scsi' rotation_rate="1"/>
       <address type='drive' controller='0' bus='0' target='0' unit='2'/>
     </disk>
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
-      <source file='/data/marchambault/VirtualMachines/iso/virtio-win-0.1.171.iso'/>
+      <!-- <source file=''/> -->
       <target dev='sdb' bus='sata'/>
       <readonly/>
+      <boot order='1'/>
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <controller type='scsi' index='0' model='virtio-scsi'>
@@ -168,21 +169,21 @@
     </controller>
 
     <!-- networking -->
-    <!-- <interface type='bridge'>
+    <interface type='bridge'>
       <mac address='52:54:00:f5:2c:df'/>
       <source bridge='virbr0'/>
       <model type='virtio'/>
       <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
-    </interface> -->
-    <interface type='bridge'>
+    </interface>
+    <!-- <interface type='bridge'>
       <mac address='52:54:00:f5:2c:df'/>
       <source bridge='br0'/>
       <target dev="vnet0"/>
       <model type='virtio'/>
       <link state='up'/>
       <address type='pci' domain='0x0000' bus='0x08' slot='0x00' function='0x0'/>
-    </interface>
+    </interface> -->
 
     <!-- HID -->
     <input type='mouse' bus='ps2'/>
@@ -207,9 +208,12 @@
       <address type='pci' domain='0x0000' bus='0x02' slot='0x02' function='0x0'/>
       <audio id='1'/>
     </sound>
-    <audio id='1' type='pulseaudio' serverName='/run/user/1000/pulse/native'>
-      <output mixingEngine='no' voices='1' bufferLength='100'>
-        <!-- <settings frequency='48000' channels='2' format='f32'/> -->
+    <audio id='1' timerPeriod='40' type='pulseaudio' serverName='/run/user/1000/pulse/native'>
+      <input mixingEngine='yes' fixedSettings='yes' voices='1' bufferLength='100'>
+        <settings frequency='44100' channels='2' format='s16'/>
+      </input>
+      <output mixingEngine='yes' fixedSettings='yes' voices='1' bufferLength='100'>
+        <settings frequency='48000' channels='2' format='f32'/>
       </output>
     </audio>
   
@@ -219,9 +223,12 @@
       <source>
         <address domain='0x{{ pci_device_id.domain }}' bus='0x{{ pci_device_id.bus }}' slot='0x{{ pci_device_id.slot }}' function='0x{{ pci_device_id.function }}'/>
       </source>
+      {% if 'alias' in pci_device_id %}
+        <alias name='{{ pci_device_id.alias }}'/>
+      {% endif %}
     </hostdev>
     {% endfor %}
-  
+
     <!-- spice -->
     <graphics type='spice' listen='127.0.0.1' port='5900' defaultMode='insecure'>
         <listen type='address' address='127.0.0.1'/>
@@ -245,6 +252,18 @@
     </shmem>
 
   </devices>
+
+  <qemu:override>
+    <!-- workaround for NVMe passthrough with SMI SM2262 controller -->
+    <!-- this breaks with >15 vCPUs! -->
+    <!-- https://bugzilla.kernel.org/show_bug.cgi?id=202055#c42 -->
+    <!-- <qemu:device alias='ua-nvme1'>
+      <qemu:frontend>
+        <qemu:property name='x-msix-relocation' type='string' value='bar2'/>
+      </qemu:frontend>
+    </qemu:device> -->
+  </qemu:override>
+
   <qemu:commandline>
   </qemu:commandline>
 </domain>
