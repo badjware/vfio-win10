@@ -14,21 +14,20 @@ prepare() {
         irq-affinity mask C1-3,5-7 \
         cpuset-modify --cpus C0,4 /system.slice \
         cpuset-modify --cpus C0,4 /user.slice \
-        move-tasks / /host.slice \
         cpu-governor performance C0-7
 
-    for _ in $(seq 5); do
-        sleep 3
-        # assign hugepages
-        sysctl -w vm.nr_hugepages=8192 && break
-    done
-    sleep 10
+    # for _ in $(seq 5); do
+    #     sleep 3
+    #     # assign hugepages
+    #     sysctl -w vm.nr_overcommit_hugepages=8192 && break
+    # done
+    # sleep 10
 }
 
 release() {
     systemctl stop win10-usb
     vfio-isolate restore /tmp/win10.undo
-    sysctl -w vm.nr_hugepages=0
+    # sysctl -w vm.nr_overcommit_hugepages=0
 }
 
 if [ "$1" == "win10" ]; then

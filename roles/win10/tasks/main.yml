@@ -2,6 +2,7 @@
   pacman:
     name:
       - qemu
+      # - qemu-audio-jack
       - libvirt
       - bridge-utils
       - ovmf
