@@ -209,17 +209,17 @@
       <codec type='micro'/>
       <audio id='1'/>
     </sound>
-    <audio id='1' type='pulseaudio' serverName='/run/user/1000/pulse/native'>
+    <!-- <audio id='1' type='pulseaudio' serverName='/run/user/1000/pulse/native'>
       <input mixingEngine='yes' fixedSettings='yes' voices='1' bufferLength='100'/>
       <output mixingEngine='yes' fixedSettings='yes' voices='1' bufferLength='100'>
-        <settings frequency='48000' channels='2' format='f32'/>
+        <settings frequency='48000' channels='2' format='s16'/>
       </output>
-    </audio>
+    </audio> -->
 
-    <!-- <audio id='1' type='pulseaudio' serverName='/run/user/1000/pulse/native'>
+    <audio id='1' type='pulseaudio' serverName='/run/user/1000/pulse/native'>
       <input mixingEngine='no'/>
       <output mixingEngine='no'/>
-    </audio> -->
+    </audio>
     
     <!-- <audio id='1' type='jack'>
       <input clientName="win10" connectPorts="{{ audio.source }}"/>
