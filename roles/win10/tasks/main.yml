@@ -4,6 +4,7 @@
       - qemu
       # - qemu-audio-jack
       - libvirt
+      - dmidecode
       - bridge-utils
       - ovmf
       - virt-manager

@@ -29,31 +29,14 @@
   </cputune>
   <os>
     <type arch='x86_64' machine='pc-q35-4.1'>hvm</type>
+    <smbios mode="host"/>
     <loader readonly='yes' type='pflash'>/usr/share/ovmf/x64/OVMF_CODE.fd</loader>
     <nvram>/var/lib/libvirt/qemu/nvram/win10_VARS.fd</nvram>
   </os>
   <features>
     <acpi/>
     <apic/>
-    <hyperv>
-      <!-- hyper-v enlightments, the more the better -->
-      <!-- https://archive.fosdem.org/2019/schedule/event/vai_enlightening_kvm/ -->
-      <relaxed state='on'/>
-      <vapic state='on'/>
-      <spinlocks state='on' retries='8191'/>
-      <vpindex state='on'/>
-      <runtime state='on'/>
-      <synic state='on'/>
-      <stimer state="on">
-        <direct state="on"/>
-      </stimer>
-      <reset state='on'/>
-      <vendor_id state='on' value='other'/>
-      <frequencies state='on'/>
-      <reenlightenment state='on'/>
-      <tlbflush state='on'/>
-      <ipi state='on'/>
-      <evmcs state='off'/>
+    <hyperv mode='passthrough'>
     </hyperv>
     <kvm>
         <hidden state='on'/>
