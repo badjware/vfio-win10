@@ -32,6 +32,7 @@
       #   slot: '00'
       #   function: '0'
     usb_device_ids:
+      - '2dc8:3109' # 8BitDo Ultimate Wireless Controller
       - '054c:05c4' # Sony Corp. DualShock 4 [CUH-ZCT1x]
       - '046d:c539' # Logitech, Inc. USB Receiver
       - '046d:c08d' # Logitech, Inc. G502 LIGHTSPEED Wireless Gaming Mouse
