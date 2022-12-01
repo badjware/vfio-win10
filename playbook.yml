@@ -8,7 +8,6 @@
       - '8086:15b8' # Intel Corporation Ethernet Connection (2) I219-V
       - '1002:731f' # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 [Radeon RX 5700 / 5700 XT]
       - '1002:ab38' # Advanced Micro Devices, Inc. [AMD/ATI] Navi 10 HDMI Audio
-      # - 'c0a9:2263' # Micron/Crucial Technology P1 NVMe PCIe SSD
     pci_device_ids:
       # Intel Corporation Ethernet Connection (2) I219-V
       - domain: '0000'
@@ -32,7 +31,7 @@
       #   slot: '00'
       #   function: '0'
     usb_device_ids:
-      - '2dc8:3109' # 8BitDo Ultimate Wireless Controller
+      - '2dc8:3106' # 8BitDo Ultimate Wireless Controller
       - '054c:05c4' # Sony Corp. DualShock 4 [CUH-ZCT1x]
       - '046d:c539' # Logitech, Inc. USB Receiver
       - '046d:c08d' # Logitech, Inc. G502 LIGHTSPEED Wireless Gaming Mouse
