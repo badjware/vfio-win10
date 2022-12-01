@@ -16,11 +16,11 @@ prepare() {
         cpuset-modify --cpus C0,4 /user.slice \
         cpu-governor performance C0-7
 
-    # for _ in $(seq 5); do
-    #     sleep 3
-    #     # assign hugepages
-    #     sysctl -w vm.nr_overcommit_hugepages=8192 && break
-    # done
+    for _ in $(seq 10); do
+        # assign hugepages
+        sysctl -w vm.nr_overcommit_hugepages=8192 && break
+        sleep 1
+    done
     # sleep 10
 }
 

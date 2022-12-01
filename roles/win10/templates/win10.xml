@@ -9,7 +9,7 @@
   <memory unit='KiB'>16777216</memory>
   <currentMemory unit='KiB'>16777216</currentMemory>
   <memoryBacking>
-    <!-- <hugepages/> -->
+    <hugepages/>
     <locked/>
   </memoryBacking>
   <vcpu placement='static'>6</vcpu>
