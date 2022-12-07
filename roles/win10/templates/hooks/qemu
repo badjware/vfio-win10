@@ -5,22 +5,24 @@ prepare() {
 
     # https://github.com/gnif/vendor-reset/issues/46#issuecomment-992282166
     {% for pci_device_id in pci_device_ids %}
+    {% if pci_device_id.fix_reset_method|default(False) %}
     echo 'device_specific' >'/sys/bus/pci/devices/{{ pci_device_id.domain }}:{{ pci_device_id.bus }}:{{ pci_device_id.slot }}.{{ pci_device_id.function }}/reset_method'
+    {% endif %}
     {% endfor %}
         
     vfio-isolate -u /tmp/win10.undo \
-        drop-caches \
-        compact-memory \
-        irq-affinity mask C1-3,5-7 \
-        cpuset-modify --cpus C0,4 /system.slice \
-        cpuset-modify --cpus C0,4 /user.slice \
-        cpu-governor performance C0-7
+        irq-affinity mask C0-15 \
+        cpuset-modify --cpus C16-19 /system.slice \
+        cpuset-modify --cpus C16-19 /user.slice \
+        cpu-governor performance C0-19
+        # drop-caches \
+        # compact-memory \
 
-    for _ in $(seq 10); do
+    # for _ in $(seq 10); do
         # assign hugepages
-        sysctl -w vm.nr_overcommit_hugepages=8192 && break
-        sleep 1
-    done
+        # sysctl -w vm.nr_overcommit_hugepages=8192 && break
+        # sleep 1
+    # done
     # sleep 10
 }
 
