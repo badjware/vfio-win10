@@ -31,20 +31,6 @@
     <vcpupin vcpu='13' cpuset='13'/>
     <vcpupin vcpu='14' cpuset='14'/>
     <vcpupin vcpu='15' cpuset='15'/>
-    <!-- <vcpupin vcpu='0' cpuset='2'/>
-    <vcpupin vcpu='1' cpuset='3'/>
-    <vcpupin vcpu='2' cpuset='4'/>
-    <vcpupin vcpu='3' cpuset='5'/>
-    <vcpupin vcpu='4' cpuset='6'/>
-    <vcpupin vcpu='5' cpuset='7'/>
-    <vcpupin vcpu='6' cpuset='8'/>
-    <vcpupin vcpu='7' cpuset='9'/>
-    <vcpupin vcpu='8' cpuset='10'/>
-    <vcpupin vcpu='9' cpuset='11'/>
-    <vcpupin vcpu='10' cpuset='12'/>
-    <vcpupin vcpu='11' cpuset='13'/>
-    <vcpupin vcpu='12' cpuset='14'/>
-    <vcpupin vcpu='13' cpuset='15'/> -->
     <emulatorpin cpuset='16'/>
     <iothreadpin cpuset='17' iothread='1'/>
     <vcpusched vcpus='0-15' scheduler='fifo' priority='99'/>
@@ -167,7 +153,6 @@
     <controller type='pci' index='6' model='pcie-root-port'>
       <model name='pcie-root-port'/>
       <target chassis='6' port='0x13'/>
-      <alias name='ua-gfx0'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x3'/>
     </controller>
     <controller type='pci' index='7' model='pcie-root-port'>
@@ -204,9 +189,9 @@
     </interface>
 
     <!-- HID -->
-    <input type='mouse' bus='ps2'/>
+    <!-- <input type='mouse' bus='ps2'/> -->
     <input type='mouse' bus='virtio'/>
-    <input type='keyboard' bus='ps2'/>
+    <!-- <input type='keyboard' bus='ps2'/> -->
     <input type='keyboard' bus='virtio'/>
     <!-- mouse evdev passthrough -->
     {% for item in mice %}
@@ -273,11 +258,11 @@
     </redirdev> -->
 
     <!-- looking-glass -->
-    <shmem name='looking-glass'>
+    <!-- <shmem name='looking-glass'>
       <model type='ivshmem-plain'/>
       <size unit='M'>32</size>
       <address type='pci' domain='0x0000' bus='0x02' slot='0x04' function='0x0'/>
-    </shmem>
+    </shmem> -->
   </devices>
 
   <qemu:override>
