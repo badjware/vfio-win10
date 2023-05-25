@@ -99,10 +99,10 @@
     block: |
       cgroup_device_acl = [
           {% for item in keyboards %}
-          "/dev/input/by-id/uinput-persist-keyboard{{ loop.index0 }}",
+          "{{ item }}",
           {% endfor %}
           {% for item in mice %}
-          "/dev/input/by-id/uinput-persist-mouse{{ loop.index0 }}",
+          "{ item }}",
           {% endfor %}
           "/dev/kvm",
           "/dev/null", "/dev/full", "/dev/zero",

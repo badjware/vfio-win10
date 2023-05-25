@@ -28,7 +28,7 @@
         function: '0'
     usb_device_ids: []
     keyboards:
-      - '/dev/input/by-path/platform-i8042-serio-0-event-kbd'
+      - '/dev/input/by-id/usb-Keychron_K4_Keychron_K4-event-kbd'
     mice: []
   roles:
     - win10

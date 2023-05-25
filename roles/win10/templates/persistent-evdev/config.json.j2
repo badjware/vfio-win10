@@ -1,12 +1,13 @@
 {
     "cache": "/opt/persistent-evdev/cache",
     "devices": {
+        {% if keyboards or mice %}
         {% for item in keyboards %}
-        "persist-keyboard{{loop.index0}}": "{{ item }}",
+        "persist-keyboard{{loop.index0}}": "{{ item }}"{%if not loop.last or mice %},{% endif %}
         {% endfor %}
         {% for item in mice %}
-        "persist-mouse{{loop.index0}}": "{{ item }}",
+        "persist-mouse{{loop.index0}}": "{{ item }}"{%if not loop.last %},{% endif %}
         {% endfor %}
-        "dummy" : "/dev/null"
+        {% endif %}
     }
 }
